@@ -47,8 +47,20 @@ namespace BinanceConsoleApp
             //await MinimalWithoutDependencyInjection.ExampleMain(args);
             //await OrderBookCacheAccountBalanceExample.AdvancedExampleMain(args);
             //await ReadMeExample.ExampleMain(args);
-
-
+            var binanceApi = new BinanceApi();
+            var price = await binanceApi.GetPriceAsync("ETHBTC");
+            var allPrices = await binanceApi.GetPricesAsync();
+            Console.WriteLine($"rekkt = {price.Symbol}, {price.Value}");
+            var candleSticks = await binanceApi.GetCandlesticksAsync("ETHBTC", CandlestickInterval.Minute);
+            foreach(var price1 in allPrices)
+            {
+                Console.WriteLine($"/t {price1.Symbol}, {price1.Value}");
+            }
+            foreach (var candle in candleSticks)
+            {
+                Console.WriteLine($"/t #:{candle.NumberOfTrades}, time:{candle.Time}");
+            }
+            return;
             var cts = new CancellationTokenSource();
 
             try
