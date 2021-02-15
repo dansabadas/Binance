@@ -15,6 +15,10 @@
         </Grid.ColumnDefinitions>
         <DataGrid Name="DataGrid1" Grid.ColumnSpan="4" />
         <ListView Name="ListView1" Grid.ColumnSpan="4" />
-        <ListBox Name="ListBox1" Grid.ColumnSpan="4" />
+        <ListBox Name="ListBox1" Grid.ColumnSpan="4" Margin="34,10,-34,-10" >
+            <Button Content="Get Price" Click="Button_Click"/>
+            <Label Content="Le prix" Name="PriceLabel" />
+            <TextBox Name="SymbolTextBox" Text="ETHBTC" TextWrapping="Wrap" Width="120"/>
+        </ListBox>
     </Grid>
 </Window>
