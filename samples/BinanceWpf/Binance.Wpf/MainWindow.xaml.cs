@@ -1,21 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Timer = System.Timers.Timer;
 
 namespace Binance.Wpf
 {
@@ -25,46 +14,63 @@ namespace Binance.Wpf
     public partial class MainWindow : Window
     {
         readonly BinanceApi binanceApi;
-        readonly System.Timers.Timer _timer;
+        readonly Timer _timer;
         private SynchronizationContext _uiContext = SynchronizationContext.Current;
         public MainWindow()
         {
             InitializeComponent();
             binanceApi = new BinanceApi();
 
-            this.Loaded += MainWindow_Loaded;
-            _timer = new System.Timers.Timer(2000) { Enabled = false };
+            _timer = new Timer(2000) { Enabled = false, AutoReset = true };
             _timer.Elapsed += _timer_Elapsed;
         }
 
 
         private async void _timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            _timer.Enabled = false;
             string symbol = null;
-            Dispatcher.Invoke(new Action(() => symbol = SymbolTextBox.Text));
+            Dispatcher.Invoke(() => symbol = SymbolTextBox.Text);
 
-            var price = await binanceApi.GetPriceAsync(symbol);
-
-            Dispatcher.Invoke(new Action(() => PriceLabel.Content = price.Value.ToString()));
-            _timer.Enabled = true;
+            SymbolPrice price = null;
+            try
+            {
+                price = await binanceApi.GetPriceAsync(symbol);
+            }
+            catch(BinanceHttpException ex) {
+                if (ex.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    Dispatcher.Invoke(() => PriceLabel.Content = $"Wrong Ticker code: {symbol}");
+                    return;
+                }
+            }
+            Dispatcher.Invoke(() => PriceLabel.Content = $"{symbol}: {price.Value}");
         }
 
-        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            var allPrices = await binanceApi.GetPricesAsync();
-            DataGrid1.ItemsSource = allPrices;
-        }
-
+        IEnumerable<SymbolPrice> _allPrices;
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            _timer.Enabled = true;
-            // get price
-            var price = await binanceApi.GetPriceAsync(this.SymbolTextBox.Text);
-            Dispatcher.Invoke(() =>
+            if ((string)PriceButton.Content == "Get Price")
             {
-                PriceLabel.Content = price.Value.ToString();
-            });
+                _timer.Enabled = true;
+                PriceButton.Content = "Stop Binance queries";
+            }
+            else
+            {
+                PriceButton.Content = "Get Price";
+                _timer.Enabled = false;
+            }
+
+            if (_allPrices == null)
+            {
+                _allPrices = await binanceApi.GetPricesAsync();
+
+                FilteredComboBox1.IsEditable = true;
+                FilteredComboBox1.IsTextSearchEnabled = false;
+                FilteredComboBox1.ItemsSource = _allPrices.Select(price => price.Symbol).ToList();
+            }
+
+            
+                // https://www.wpftutorial.net/GridLayout.html https://www.tutorialspoint.com/wpf/wpf_layouts.htm
         }
     }
 }
