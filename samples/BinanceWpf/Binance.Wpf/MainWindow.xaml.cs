@@ -29,12 +29,17 @@ namespace Binance.Wpf
         private async void _timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             string symbol = null;
-            Dispatcher.Invoke(() => symbol = SymbolTextBox.Text);
+            Dispatcher.Invoke(() => symbol = FilteredComboBox1.Text);
 
             SymbolPrice price = null;
             try
             {
                 price = await binanceApi.GetPriceAsync(symbol);
+            }
+            catch (ArgumentException)
+            {
+                Dispatcher.Invoke(() => PriceLabel.Content = $"Wrong Ticker code: {symbol}");
+                return;
             }
             catch(BinanceHttpException ex) {
                 if (ex.StatusCode == System.Net.HttpStatusCode.BadRequest)
@@ -49,6 +54,16 @@ namespace Binance.Wpf
         IEnumerable<SymbolPrice> _allPrices;
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
+            if (_allPrices == null)
+            {
+                _allPrices = await binanceApi.GetPricesAsync();
+
+                FilteredComboBox1.IsEditable = true;
+                FilteredComboBox1.IsTextSearchEnabled = false;
+                FilteredComboBox1.ItemsSource = _allPrices.Select(price => price.Symbol).ToList();
+                FilteredComboBox1.SelectedValue = "ETHBTC";
+            }
+
             if ((string)PriceButton.Content == "Get Price")
             {
                 _timer.Enabled = true;
@@ -59,18 +74,7 @@ namespace Binance.Wpf
                 PriceButton.Content = "Get Price";
                 _timer.Enabled = false;
             }
-
-            if (_allPrices == null)
-            {
-                _allPrices = await binanceApi.GetPricesAsync();
-
-                FilteredComboBox1.IsEditable = true;
-                FilteredComboBox1.IsTextSearchEnabled = false;
-                FilteredComboBox1.ItemsSource = _allPrices.Select(price => price.Symbol).ToList();
-            }
-
-            
-                // https://www.wpftutorial.net/GridLayout.html https://www.tutorialspoint.com/wpf/wpf_layouts.htm
+            // https://www.wpftutorial.net/GridLayout.html https://www.tutorialspoint.com/wpf/wpf_layouts.htm
         }
     }
 }

@@ -30,7 +30,6 @@
                   Width="5" Background="#FFBCBCBC"/>
         <Button Content="Get Price" Width="200" Click="Button_Click" Grid.Column="0" Grid.Row="0" Name="PriceButton" />
         <Label Content="Le prix" Name="PriceLabel" Width="300"  Grid.Column="2" Grid.Row="0" />
-        <TextBox Name="SymbolTextBox" Text="ETHBTC" TextWrapping="Wrap" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left"  />
         <local:FilteredComboBox 
             x:Name="FilteredComboBox1" 
             ItemsPanel="{DynamicResource ItemsTemplate}" 
