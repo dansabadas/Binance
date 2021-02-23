@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Media;
+using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
+using System.Windows.Media;
 using Timer = System.Timers.Timer;
 
 namespace Binance.Wpf
@@ -19,6 +21,10 @@ namespace Binance.Wpf
         private decimal _targetPrice;
         private decimal _currentPrice;
         private bool _isPriceSearchAscending;
+
+        private MediaPlayer _mediaPlayerAscending = new MediaPlayer();
+        private MediaPlayer _mediaPlayerDescending = new MediaPlayer();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -27,6 +33,8 @@ namespace Binance.Wpf
 
             _timer = new Timer(2000) { Enabled = false, AutoReset = true };
             _timer.Elapsed += _timer_Elapsed;
+            _mediaPlayerAscending.Open(new Uri("08 - The End Complete.mp3", UriKind.Relative));
+            _mediaPlayerDescending.Open(new Uri("01 - Internal Bleeding.mp3", UriKind.Relative));
         }
 
 
@@ -60,14 +68,22 @@ namespace Binance.Wpf
             {
                 if (_targetPrice <= _currentPrice)
                 {
-                    SystemSounds.Beep.Play();
+                    var musicPlayTask = Task.Factory.StartNew(() =>
+                    {
+                        Dispatcher.Invoke(() => _mediaPlayerAscending.Play());
+                    });
+                    await Task.Delay(15000).ContinueWith((t) => Dispatcher.Invoke(() => _mediaPlayerAscending.Stop()));
                 }
             }
             else
             {
                 if (_targetPrice >= _currentPrice)
                 {
-                    SystemSounds.Exclamation.Play();
+                    var musicPlayTask = Task.Factory.StartNew(() =>
+                    {
+                        Dispatcher.Invoke(() => _mediaPlayerDescending.Play());
+                    });
+                    await Task.Delay(15000).ContinueWith((t) => Dispatcher.Invoke(() => _mediaPlayerDescending.Stop()));
                 }
             }
 
