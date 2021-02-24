@@ -41,7 +41,7 @@
             
             <Label Content="Le prix" Name="PriceLabel" Grid.Column="0" Grid.Row="0"   />
             <Label Name="TimeLabel" Grid.Column="1" Grid.Row="0" Content="Time" />
-            <TextBox Name="AlertPriceTextBlock" Grid.Column="2" Grid.Row="0" Width="300" Text="ENter price alert" HorizontalAlignment="Left" KeyUp="AlertPriceTextBlock_KeyUp" />
+            <TextBox x:Name="AlertPriceTextBox" Grid.Column="2" Grid.Row="0" Width="100" Text="ENter price alert" HorizontalAlignment="Left" KeyUp="AlertPriceTextBlock_KeyUp" />
         </Grid>
 
         <local:FilteredComboBox 

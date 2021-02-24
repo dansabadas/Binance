@@ -61,7 +61,7 @@ namespace Binance.Wpf
                 }
             }
             Dispatcher.Invoke(() => PriceLabel.Content = $"{symbol}: {price.Value}");
-            Dispatcher.Invoke(() => TimeLabel.Content = $"{DateTime.Now.ToString("F", CultureInfo.InvariantCulture)}");
+            Dispatcher.Invoke(() => TimeLabel.Content = $"{DateTime.Now.ToString("T", CultureInfo.InvariantCulture)}");
 
             _currentPrice = price.Value;
             if (_isPriceSearchAscending)
@@ -116,13 +116,15 @@ namespace Binance.Wpf
             {
                 PriceButton.Content = "Get Price";
                 _timer.Enabled = false;
+                _mediaPlayerAscending.Stop();
+                _mediaPlayerDescending.Stop();
             }
             // https://www.wpftutorial.net/GridLayout.html https://www.tutorialspoint.com/wpf/wpf_layouts.htm
         }
 
         private void AlertPriceTextBlock_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            if(!decimal.TryParse(AlertPriceTextBlock.Text, out _targetPrice))
+            if(!decimal.TryParse(AlertPriceTextBox.Text, out _targetPrice))
             {
                 _targetPrice = -1;
             }
