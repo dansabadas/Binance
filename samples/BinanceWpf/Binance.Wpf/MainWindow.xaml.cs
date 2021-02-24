@@ -64,23 +64,24 @@ namespace Binance.Wpf
             Dispatcher.Invoke(() => TimeLabel.Content = $"{DateTime.Now.ToString("T", CultureInfo.InvariantCulture)}");
 
             _currentPrice = price.Value;
-            if (_isPriceSearchAscending)
-            {
-                if (_targetPrice <= _currentPrice)
-                {
-                    await PlayAlarm(_mediaPlayerAscending);
-                }
-            }
-            else
-            {
-                if (_targetPrice >= _currentPrice)
-                {
-                    await PlayAlarm(_mediaPlayerDescending);
-                }
-            }
-
+            
             if (_targetPrice > 0)
             {
+                if (_isPriceSearchAscending)
+                {
+                    if (_targetPrice <= _currentPrice)
+                    {
+                        await PlayAlarm(_mediaPlayerAscending);
+                    }
+                }
+                else
+                {
+                    if (_targetPrice >= _currentPrice)
+                    {
+                        await PlayAlarm(_mediaPlayerDescending);
+                    }
+                }
+
                 _isPriceSearchAscending = _currentPrice < _targetPrice;
             }
         }
