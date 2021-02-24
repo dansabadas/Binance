@@ -34,7 +34,7 @@ namespace Binance.Wpf
             _timer = new Timer(2000) { Enabled = false, AutoReset = true };
             _timer.Elapsed += _timer_Elapsed;
             _mediaPlayerAscending.Open(new Uri("08 - The End Complete.mp3", UriKind.Relative));
-            _mediaPlayerDescending.Open(new Uri("01 - Internal Bleeding.mp3", UriKind.Relative));
+            _mediaPlayerDescending.Open(new Uri("08 - The End Complete.mp3", UriKind.Relative));//"01 - Internal Bleeding.mp3"
         }
 
 
@@ -68,22 +68,14 @@ namespace Binance.Wpf
             {
                 if (_targetPrice <= _currentPrice)
                 {
-                    var musicPlayTask = Task.Factory.StartNew(() =>
-                    {
-                        Dispatcher.Invoke(() => _mediaPlayerAscending.Play());
-                    });
-                    await Task.Delay(15000).ContinueWith((t) => Dispatcher.Invoke(() => _mediaPlayerAscending.Stop()));
+                    await PlayAlarm(_mediaPlayerAscending);
                 }
             }
             else
             {
                 if (_targetPrice >= _currentPrice)
                 {
-                    var musicPlayTask = Task.Factory.StartNew(() =>
-                    {
-                        Dispatcher.Invoke(() => _mediaPlayerDescending.Play());
-                    });
-                    await Task.Delay(15000).ContinueWith((t) => Dispatcher.Invoke(() => _mediaPlayerDescending.Stop()));
+                    await PlayAlarm(_mediaPlayerDescending);
                 }
             }
 
@@ -91,6 +83,15 @@ namespace Binance.Wpf
             {
                 _isPriceSearchAscending = _currentPrice < _targetPrice;
             }
+        }
+
+        private async Task PlayAlarm(MediaPlayer mediaPlayer)
+        {
+            var musicPlayTask = Task.Factory.StartNew(() =>
+            {
+                Dispatcher.Invoke(() => mediaPlayer.Play());
+            });
+            await Task.Delay(15000).ContinueWith((t) => Dispatcher.Invoke(() => mediaPlayer.Stop()));
         }
 
         IEnumerable<SymbolPrice> _allPrices;
