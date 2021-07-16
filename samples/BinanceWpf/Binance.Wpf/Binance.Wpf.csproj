@@ -10,4 +10,10 @@
     <ProjectReference Include="..\..\..\src\Binance\Binance.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="08 - The End Complete.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -20,6 +20,7 @@ namespace Binance.Wpf
         readonly Timer _timer;
         private decimal _targetPrice;
         private decimal _currentPrice;
+        private List<(DateTime, decimal)> _pricesHistory;
         private bool _isPriceSearchAscending;
 
         private MediaPlayer _mediaPlayerAscending = new MediaPlayer();
@@ -30,6 +31,7 @@ namespace Binance.Wpf
             InitializeComponent();
             binanceApi = new BinanceApi();
             _targetPrice = -1;
+            _pricesHistory = new List<(DateTime, decimal)>();
 
             _timer = new Timer(2000) { Enabled = false, AutoReset = true };
             _timer.Elapsed += _timer_Elapsed;
@@ -64,7 +66,8 @@ namespace Binance.Wpf
             Dispatcher.Invoke(() => TimeLabel.Content = $"{DateTime.Now.ToString("T", CultureInfo.InvariantCulture)}");
 
             _currentPrice = price.Value;
-            
+            _pricesHistory.Add((DateTime.Now, price.Value));
+
             if (_targetPrice > 0)
             {
                 if (_isPriceSearchAscending)
